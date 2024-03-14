@@ -1,0 +1,30 @@
+---
+- name: Kubernertes Cluster creation in master node
+  hosts: webservers
+  remote_user: vagrant
+  become: true
+
+  tasks:
+  - name: Install Docker and Docker Compose using Apt
+    script:
+      cmd: ubuntu.sh
+    when:
+      - ansible_facts['distribution'] == "Ubuntu"
+ 
+
+  - name: Install Docker and Docker Compose using Yum
+    script:
+      cmd: centos.sh
+    when:
+      - ansible_facts['distribution'] == "CentOS"
+      - ansible_facts['distribution'] == "RedHat"
+      
+  - name: Copy compose file to remote
+    copy:
+      src: node-exporter.yaml
+      dest: .
+
+  - name: Install Node Exporter with Docker Compose
+    shell:
+      cmd: "docker compose -f node-exporter.yaml up -d"
+      chdir: .
