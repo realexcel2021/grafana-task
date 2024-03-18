@@ -9,6 +9,11 @@ remote_write:
     send_exemplars: false
     follow_redirects: true
 
+    write_relabel_configs:
+    - action: 'replace'
+      target_label: 'source'
+      replacement: 'safe_mac_node'
+
 scrape_configs:
   - job_name: prometheus
     static_configs:
