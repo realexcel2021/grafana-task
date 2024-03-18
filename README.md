@@ -1,61 +1,9 @@
-# Node Exporter Agent Setup
+# Grafana Dashboard for VMs Monitoring
 
-## Description
-This Python script automates the setup process for installing Docker and running a Node Exporter agent. It checks the Linux distribution to determine linux distro and ensures Docker is installed before running the Node Exporter agent container.
+We deployed Prometheus and cAdvisor containers using Docker Compose. Within the Prometheus stack, we utilized the `--enable-feature=agent` flag to enable specific features and configured it to forward metrics to `metrics.onemedtest.com`. Both the scrape interval and scrape configurations were set up in prometheus.yml. To verify that `onemedtest.com` was successfully receiving the metrics, we included the` safe_mac_node` identifier for easy tracking. Additionally, we integrated the `remote-write` capability in the configuration of `onemedtest.com` to facilitate this process.
 
-Two methods can be used to deploy the agent to the slave machine. Running the `agent.py` directly on the slave machine or using the Ansible playbook.
+See Grafana charts for CPU and Memory usage
 
-## Usage
-1. Clone repo into slave machine.
-2. Create an Ansible inventory file (`hosts`) containing the target host(s) information:
-   ```ini
-   [webservers]
-   target_hostname ansible_host=<target_ip_or_hostname>
-   ```
-   > **_NOTE:_**  This stage is not needed if deployment is made with `agent.py`.
-3. Deploy Node_exporter Agent:
+![Alt text](<Screen Shot 2024-03-18 at 15.50.56.png>)
 
-    a. Using Python Script
-
-    ```
-    python3 agaent.py
-    ```
-    b. Using Ansible Playbook
-    ```
-    ansible-playbook -i inventory playbook.yml
-    ```
-
-## Requirements
-- Python 3.x
-- Linux environment
-- Ansible
-- Target host(s) configured for SSH access.
-- Knowledge of the target host(s) distribution (Ubuntu, CentOS).
-
-## Functionality
-1. **distro_check():**
-- Description: Checks the Linux distribution (Ubuntu or CentOS).
-- Returns: Linux distribution name.
-
-2. **docker_install():**
-- Description: Installs Docker based on the detected Linux distribution.
-
-3. **check_docker():**
-- Description: Checks if Docker is installed. If not, it installs Docker using docker_install().
-
-4. **run_node_exporter_agent():**
-- Description: Runs the Node Exporter agent in a Docker container after ensuring Docker is installed.
-
-## Directory Structure
-- The script should be placed in the desired location.
-- Companion shell scripts (ubuntu.sh, centos.sh) and Docker compose file (node-exporter.yaml) should be placed in the same directory as the script.
-
-With the Node Exporter container running in the linux instance, the IP of the node should be added in the target block of the prometheus configuration i.e
-
-```
-- job_name: 'node'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['IP_of_Instance:9100']
-```
-
+![Alt text](<Screen Shot 2024-03-18 at 15.52.33.png>)
